@@ -1,0 +1,50 @@
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ blog.title }}</title>
+    <!-- Add meta tags for better SEO and social media sharing -->
+    <meta property="og:title" content="{{ blog.title }}" />
+    <meta property="og:description" content="{{ blog.descriptions|truncatewords:30 }}" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+</head>
+<body>
+    <h1>{{ blog.title }}</h1>
+    <p>{{ blog.descriptions }}</p>
+    
+    <!-- Search Form -->
+    <form method="GET" action="{% url 'blog_search' %}">
+        <input type="text" name="q" placeholder="Search blogs...">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Comment Section -->
+    <h2>Comments</h2>
+    <form method="POST" action="{% url 'add_comment' %}">
+        {% csrf_token %}
+        <textarea name="comment" placeholder="Add a comment..." required></textarea>
+        <button type="submit">Post</button>
+    </form>
+
+    <div class="comments">
+        {% for comment in blog.comments.all %}
+            <div class="comment">
+                <p>{{ comment.content }}</p>
+                <p><small>By {{ comment.user }} on {{ comment.created_at }}</small></p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="share-buttons">
+        <h3>Share this post via Email:</h3>
+        <form method="POST" action="">
+            {% csrf_token %}
+            {{ share_form.as_p }}
+            <button type="submit">Share</button>
+        </form>
+    </div>
+
+    <a href="{% url 'home_page' %}">Back to list</a>
+</body>
+</html>
+{% endblock %}
